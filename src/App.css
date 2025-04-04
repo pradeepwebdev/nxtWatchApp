@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* App container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+/* Content container with Sidebar and Routes */
+.content-container {
+  display: flex;
+  flex-grow: 1;
+}
+
+/* Route container to hold the routes' components */
+.route-container {
+  flex-grow: 1;
+  padding: 16px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Dynamic theme variables */
+:root {
+  --background-color: #f9f9f9;
+  --text-color: #181818;
+}
+
+body.dark-theme {
+  --background-color: #181818;
+  --text-color: #ffffff;
+}

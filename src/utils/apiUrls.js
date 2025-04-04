@@ -1,0 +1,5 @@
+export const videoItemDetailsApiUrl = 'https://apis.ccbp.in/videos'
+export const loginApiUrl = 'https://apis.ccbp.in/login'
+export const homeVideosApiUrl = 'https://apis.ccbp.in/videos/all?search='
+export const trendingVideosApiUrl = 'https://apis.ccbp.in/videos/trending'
+export const gamingVideosApiUrl = 'https://apis.ccbp.in/videos/gaming'
