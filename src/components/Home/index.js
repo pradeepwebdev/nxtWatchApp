@@ -74,22 +74,22 @@ const Home = () => {
     <SavedVideosContext.Consumer>
       {() => (
         <div>
-          <Banner data-testid="banner" />
+          <Banner data-testid='banner' />
           <SearchContainer>
             <SearchInput
-              type="text"
-              placeholder="Search"
+              type='text'
+              placeholder='Search'
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
-            <SearchButton data-testid="searchButton" onClick={handleSearch}>
+            <SearchButton data-testid='searchButton' onClick={handleSearch}>
               Search
             </SearchButton>
           </SearchContainer>
 
           {isLoading && (
-            <LoaderContainer data-testid="loader">
-              <Loader type="ThreeDots" color="#ffffff" height={50} width={50} />
+            <LoaderContainer data-testid='loader'>
+              <Loader type='ThreeDots' color='#ffffff' height={50} width={50} />
             </LoaderContainer>
           )}
 
@@ -102,13 +102,13 @@ const Home = () => {
                 >
                   <VideoThumbnail
                     src={video.thumbnail_url}
-                    alt="video thumbnail"
+                    alt='video thumbnail'
                   />
                   <VideoTitle>{video.title}</VideoTitle>
                   <VideoChannel>
                     <img
                       src={video.channel.profile_image_url}
-                      alt="channel logo"
+                      alt='channel logo'
                     />
                     <span>{video.channel.name}</span>
                     <span>
