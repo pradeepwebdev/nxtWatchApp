@@ -38,8 +38,10 @@ const Login = () => {
     setIsLoading(false)
 
     if (response.ok) {
+      console.log(`Data: ${JSON.stringify(data)}`)
       const {jwt_token: jwtToken} = data // Destructure and rename
-      Cookies.set('jwt_token', jwtToken, {expires: 30}) // Store token in cookies for 30 days
+
+      Cookies.set('jwt_token', jwtToken)
       history.replace('/')
     } else {
       setError(data.error_msg)

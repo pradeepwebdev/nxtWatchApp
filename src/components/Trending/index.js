@@ -31,12 +31,12 @@ const Trending = () => {
           Authorization: `Bearer ${jwtToken}`,
         },
       })
-
       if (!response.ok) {
         throw new Error('Failed to fetch data')
       }
       const data = await response.json()
-      setVideos(data.videos)
+      console.log(`Get Response in trending:, ${JSON.stringify(data)}`)
+      setVideos(data.videos || [])
       setLoading(false)
     } catch (error) {
       setHasError(true)
@@ -57,6 +57,7 @@ const Trending = () => {
   const navigateToVideoItemDetails = videoId => {
     console.log(`VideoId : , ${videoId}`)
     history.push(`/videos/${videoId}`)
+    console.log(history.push(`/videos/${videoId}`))
   }
 
   if (loading) {

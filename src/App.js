@@ -1,12 +1,12 @@
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import {
   BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
 } from 'react-router-dom'
-import {ThemeProvider} from 'styled-components'
 import Cookies from 'js-cookie'
+import {ThemeProvider} from 'styled-components'
 import Login from './components/Login'
 import Home from './components/Home'
 import Trending from './components/Trending'
@@ -32,67 +32,92 @@ const darkTheme = {
   text: '#ffffff',
 }
 
+const ProtectedRoute = ({children}) => {
+  const jwtToken = Cookies.get('jwt_token') // Checking if JWT token exists in cookies
+  console.log(`Get Token: ${jwtToken}`)
+  return jwtToken ? children : <Redirect to="/login" />
+}
+
 const App = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(false)
-  const [jwtToken, setJwtToken] = useState(Cookies.get('jwt_token'))
+  const [savedVideos, setSavedVideos] = useState([])
 
   const toggleTheme = () => {
     setIsDarkTheme(prevState => !prevState)
   }
 
-  useEffect(() => {
-    // Update the token state if the cookie changes (for example, after login)
-    const token = Cookies.get('jwt_token')
-    setJwtToken(token)
-  }, [jwtToken])
+  const login = token => {
+    Cookies.set('jwt_token', token) // Store JWT token in cookies
+  }
+
+  const logout = () => {
+    Cookies.remove('jwt_token') // Remove JWT token from cookies
+  }
+
+  const addVideo = video => {
+    setSavedVideos(prevVideos => [...prevVideos, video])
+  }
+
+  const removeVideo = id => {
+    setSavedVideos(prevVideos => prevVideos.filter(video => video.id !== id))
+  }
 
   return (
     <ThemeProvider theme={isDarkTheme ? darkTheme : lightTheme}>
       <div className="app-container">
-        <Header toggleTheme={toggleTheme} />
+        <Header toggleTheme={toggleTheme} logout={logout} />
         <div className="content-container">
           <Sidebar />
           <div className="route-container">
             <SavedVideosContext.Provider
-              value={{
-                savedVideos: [], // Replace with actual logic
-                addVideo: () => {},
-                removeVideo: () => {},
-              }}
+              value={{savedVideos, addVideo, removeVideo}}
             >
               <Router>
                 <Switch>
-                  <Route path="/login" component={Login} />
+                  <Route
+                    path="/login"
+                    render={props => <Login {...props} login={login} />}
+                  />
                   <Route
                     exact
                     path="/"
-                    render={() =>
-                      jwtToken ? <Home /> : <Redirect to="/login" />
-                    }
+                    render={() => (
+                      <ProtectedRoute>
+                        <Home />
+                      </ProtectedRoute>
+                    )}
                   />
                   <Route
                     path="/trending"
-                    render={() =>
-                      jwtToken ? <Trending /> : <Redirect to="/login" />
-                    }
+                    render={() => (
+                      <ProtectedRoute>
+                        <Trending />
+                      </ProtectedRoute>
+                    )}
                   />
                   <Route
                     path="/gaming"
-                    render={() =>
-                      jwtToken ? <Gaming /> : <Redirect to="/login" />
-                    }
+                    render={() => (
+                      <ProtectedRoute>
+                        <Gaming />
+                      </ProtectedRoute>
+                    )}
                   />
                   <Route
                     path="/saved-videos"
-                    render={() =>
-                      jwtToken ? <SavedVideos /> : <Redirect to="/login" />
-                    }
+                    render={() => (
+                      <ProtectedRoute>
+                        <SavedVideos />
+                      </ProtectedRoute>
+                    )}
                   />
                   <Route
                     path="/videos/:id"
-                    render={() =>
-                      jwtToken ? <VideoItemDetails /> : <Redirect to="/login" />
-                    }
+                    render={() => (
+                      <ProtectedRoute>
+                        <VideoItemDetails />
+                      </ProtectedRoute>
+                    )}
                   />
                   <Route path="*" component={NotFound} />
                 </Switch>

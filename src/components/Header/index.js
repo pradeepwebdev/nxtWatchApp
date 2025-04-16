@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import {Link, useHistory} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import {FaMoon, FaSun, FaUserCircle} from 'react-icons/fa'
+
 import {
   HeaderContainer,
   Logo,
@@ -20,7 +21,7 @@ const Header = () => {
 
   // Check if theme preference is saved in localStorage
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme')
+    const savedTheme = Cookies.get('theme')
     if (savedTheme === 'dark') {
       setIsDarkTheme(true)
       document.body.classList.add('dark-theme') // Apply dark theme to the entire body
@@ -33,10 +34,10 @@ const Header = () => {
     setIsDarkTheme(prev => {
       const newTheme = !prev
       if (newTheme) {
-        localStorage.setItem('theme', 'dark')
+        Cookies.set('theme', 'dark')
         document.body.classList.add('dark-theme')
       } else {
-        localStorage.setItem('theme', 'light')
+        Cookies.set('theme', 'light')
         document.body.classList.remove('dark-theme')
       }
       return newTheme

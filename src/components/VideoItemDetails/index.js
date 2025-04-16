@@ -1,9 +1,9 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useContext} from 'react'
 import ReactPlayer from 'react-player'
 import Loader from 'react-loader-spinner'
 import {useParams} from 'react-router-dom'
 import {formatDistanceToNow} from 'date-fns'
-
+import SavedVideosContext from '../../context/SavedVideosContext'
 import {
   VideoItemContainer,
   VideoPlayerWrapper,
@@ -72,7 +72,14 @@ const VideoItemDetails = () => {
     if (likeActive) setLikeActive(false)
   }
 
+  // Add context consumer and update handleSave
+  const {addVideo, removeVideo} = useContext(SavedVideosContext)
   const handleSave = () => {
+    if (isSaved) {
+      removeVideo(videoDetails.id)
+    } else {
+      addVideo(videoDetails)
+    }
     setIsSaved(!isSaved)
   }
 
@@ -80,17 +87,17 @@ const VideoItemDetails = () => {
     <VideoItemContainer>
       {isLoading && (
         <LoaderContainer>
-          <Loader type="ThreeDots" color="#ffffff" height={50} width={50} />
+          <Loader type='ThreeDots' color='#ffffff' height={50} width={50} />
         </LoaderContainer>
       )}
 
       {isError && (
         <FailureView>
           <img
-            src="https://assets.ccbp.in/frontend/react-js/nxt-watch-video-item-details-failure-light-theme-lg-output-v0.png"
-            alt="failure view"
+            src='https://assets.ccbp.in/frontend/react-js/nxt-watch-video-item-details-failure-light-theme-lg-output-v0.png'
+            alt='failure view'
           />
-          <button type="button" onClick={() => window.location.reload()}>
+          <button type='button' onClick={() => window.location.reload()}>
             Retry
           </button>
         </FailureView>
@@ -104,7 +111,7 @@ const VideoItemDetails = () => {
             <ChannelInfo>
               <img
                 src={videoDetails.channel.profile_image_url}
-                alt="channel logo"
+                alt='channel logo'
               />
               <span>{videoDetails.channel.name}</span>
               <span>{videoDetails.view_count} views</span>

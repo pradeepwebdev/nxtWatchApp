@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import {formatDistanceToNow} from 'date-fns'
 import Popup from 'reactjs-popup'
-
+import Cookies from 'js-cookie'
 import {
   GamingContainer,
   Banner,
@@ -30,7 +30,7 @@ const Gaming = () => {
 
   // Function to get JWT token from cookies/localStorage
   const getAuthToken = () =>
-    localStorage.getItem('jwt_token') || document.cookie.split('jwt_token=')[1]
+    Cookies.get('jwt_token') || document.cookie.split('jwt_token=')[1]
 
   // Fetching the gaming videos from the API
   const fetchVideos = useCallback(async () => {
@@ -65,7 +65,7 @@ const Gaming = () => {
 
   // Set theme color for background based on user preference or system
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light' // Set default theme
+    const savedTheme = Cookies.get('theme') || 'light' // Set default theme
     setTheme(savedTheme)
   }, [])
 
