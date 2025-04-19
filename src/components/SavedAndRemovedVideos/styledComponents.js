@@ -1,5 +1,3 @@
-// src/components/SavedVideos/styledComponents.js
-
 import styled from 'styled-components'
 
 export const SavedVideosContainer = styled.div`

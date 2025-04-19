@@ -72,15 +72,14 @@ export const FailureView = styled.div`
 `
 
 export const Button = styled.button`
-  background-color: ${({active}) => (active ? '#4f46e5' : '#ccc')};
+  background-color: ${({active}) => (active ? '#2563eb' : '#ccc')};
   color: white;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 5px;
   margin: 10px;
-
   &:hover {
-    background-color: ${({active}) => (active ? '#3b82f6' : '#999')};
+    background-color: ${({active}) => (active ? '#1e4bb5' : '#999')};
   }
 `

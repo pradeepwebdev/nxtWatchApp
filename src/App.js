@@ -1,10 +1,5 @@
 import {useState} from 'react'
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from 'react-router-dom'
+import {Route, Switch, Redirect, useLocation} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import {ThemeProvider} from 'styled-components'
 import Login from './components/Login'
@@ -12,11 +7,12 @@ import Home from './components/Home'
 import Trending from './components/Trending'
 import Gaming from './components/Gaming'
 import VideoItemDetails from './components/VideoItemDetails'
-import SavedVideos from './components/SavedVideos'
+import SavedAndRemovedVideos from './components/SavedAndRemovedVideos'
 import NotFound from './components/NotFound'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
-import SavedVideosContext from './context/SavedVideosContext'
+
+import SavedVideoContext from './context/SavedVideoContext'
 
 import './App.css'
 
@@ -32,97 +28,89 @@ const darkTheme = {
   text: '#ffffff',
 }
 
-const ProtectedRoute = ({children}) => {
-  const jwtToken = Cookies.get('jwt_token') // Checking if JWT token exists in cookies
-  console.log(`Get Token: ${jwtToken}`)
-  return jwtToken ? children : <Redirect to="/login" />
+const ProtectedRoute = ({component: Component, ...rest}) => {
+  const jwtToken = Cookies.get('jwt_token')
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        jwtToken ? <Component {...props} /> : <Redirect to="/login" />
+      }
+    />
+  )
 }
 
 const App = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(false)
   const [savedVideos, setSavedVideos] = useState([])
+  const location = useLocation()
 
   const toggleTheme = () => {
-    setIsDarkTheme(prevState => !prevState)
+    setIsDarkTheme(prev => !prev)
   }
 
   const login = token => {
-    Cookies.set('jwt_token', token) // Store JWT token in cookies
+    Cookies.set('jwt_token', token)
   }
 
   const logout = () => {
-    Cookies.remove('jwt_token') // Remove JWT token from cookies
+    Cookies.remove('jwt_token')
   }
 
   const addVideo = video => {
-    setSavedVideos(prevVideos => [...prevVideos, video])
+    // Prevent adding the same video if it's already saved
+    if (!savedVideos.find(v => v.id === video.id)) {
+      setSavedVideos(prev => [...prev, video])
+    }
   }
 
   const removeVideo = id => {
-    setSavedVideos(prevVideos => prevVideos.filter(video => video.id !== id))
+    setSavedVideos(prev => prev.filter(video => video.id !== id))
   }
+
+  const isLoginPage = location.pathname === '/login'
 
   return (
     <ThemeProvider theme={isDarkTheme ? darkTheme : lightTheme}>
       <div className="app-container">
-        <Header toggleTheme={toggleTheme} logout={logout} />
+        {!isLoginPage && (
+          <Header
+            toggleTheme={toggleTheme}
+            isDarkTheme={isDarkTheme}
+            logout={logout}
+          />
+        )}
         <div className="content-container">
-          <Sidebar />
+          {!isLoginPage && <Sidebar />}
           <div className="route-container">
-            <SavedVideosContext.Provider
+            <SavedVideoContext.Provider
               value={{savedVideos, addVideo, removeVideo}}
             >
-              <Router>
-                <Switch>
-                  <Route
-                    path="/login"
-                    render={props => <Login {...props} login={login} />}
-                  />
-                  <Route
-                    exact
-                    path="/"
-                    render={() => (
-                      <ProtectedRoute>
-                        <Home />
-                      </ProtectedRoute>
-                    )}
-                  />
-                  <Route
-                    path="/trending"
-                    render={() => (
-                      <ProtectedRoute>
-                        <Trending />
-                      </ProtectedRoute>
-                    )}
-                  />
-                  <Route
-                    path="/gaming"
-                    render={() => (
-                      <ProtectedRoute>
-                        <Gaming />
-                      </ProtectedRoute>
-                    )}
-                  />
-                  <Route
-                    path="/saved-videos"
-                    render={() => (
-                      <ProtectedRoute>
-                        <SavedVideos />
-                      </ProtectedRoute>
-                    )}
-                  />
-                  <Route
-                    path="/videos/:id"
-                    render={() => (
-                      <ProtectedRoute>
-                        <VideoItemDetails />
-                      </ProtectedRoute>
-                    )}
-                  />
-                  <Route path="*" component={NotFound} />
-                </Switch>
-              </Router>
-            </SavedVideosContext.Provider>
+              <Switch>
+                <Route
+                  path="/login"
+                  render={props =>
+                    Cookies.get('jwt_token') ? (
+                      <Redirect to="/" />
+                    ) : (
+                      <Login {...props} login={login} />
+                    )
+                  }
+                />
+                <ProtectedRoute exact path="/" component={Home} />
+                <ProtectedRoute path="/trending" component={Trending} />
+                <ProtectedRoute path="/gaming" component={Gaming} />
+                <ProtectedRoute
+                  path="/saved-videos"
+                  component={SavedAndRemovedVideos}
+                />
+                <ProtectedRoute
+                  path="/videos/:id"
+                  component={VideoItemDetails}
+                />
+                <ProtectedRoute path="*" component={NotFound} />
+              </Switch>
+            </SavedVideoContext.Provider>
           </div>
         </div>
       </div>

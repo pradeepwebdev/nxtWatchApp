@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 
+// Header wrapper
 export const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
@@ -9,21 +10,25 @@ export const HeaderContainer = styled.header`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `
 
+// Logo and profile image
 export const Logo = styled.img`
   width: 120px;
 `
 
+// Navigation bar
 export const Nav = styled.nav`
   display: flex;
   align-items: center;
   gap: 16px;
 `
 
+// Nav item wrapper
 export const NavItem = styled.div`
   display: flex;
   align-items: center;
 `
 
+// Logout button
 export const LogoutButton = styled.button`
   background-color: ${({theme}) => (theme.isDark ? '#ffffff' : '#181818')};
   color: ${({theme}) => (theme.isDark ? '#181818' : '#ffffff')};
@@ -39,6 +44,7 @@ export const LogoutButton = styled.button`
   }
 `
 
+// Logout popup container
 export const LogoutPopup = styled.div`
   position: fixed;
   top: 50%;
@@ -57,6 +63,7 @@ export const LogoutPopup = styled.div`
   }
 `
 
+// Buttons inside the popup
 export const PopupButtons = styled.div`
   display: flex;
   justify-content: space-around;
@@ -84,6 +91,7 @@ export const PopupButtons = styled.div`
   }
 `
 
+// Theme / profile icon buttons
 export const IconButton = styled.button`
   background: none;
   border: none;
@@ -95,3 +103,6 @@ export const IconButton = styled.button`
     opacity: 0.8;
   }
 `
+
+// Popup component (imported from a UI library like reactjs-popup if used)
+export const Popup = styled.div``

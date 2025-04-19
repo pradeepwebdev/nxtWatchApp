@@ -1,10 +1,10 @@
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import {Link, useHistory} from 'react-router-dom'
+import {FaMoon, FaSun} from 'react-icons/fa'
 import Cookies from 'js-cookie'
-import {FaMoon, FaSun, FaUserCircle} from 'react-icons/fa'
-
 import {
   HeaderContainer,
+  Popup,
   Logo,
   Nav,
   NavItem,
@@ -14,35 +14,9 @@ import {
   IconButton,
 } from './styledComponents'
 
-const Header = () => {
-  const [isDarkTheme, setIsDarkTheme] = useState(false)
+const Header = ({toggleTheme, isDarkTheme}) => {
   const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false)
   const history = useHistory()
-
-  // Check if theme preference is saved in localStorage
-  useEffect(() => {
-    const savedTheme = Cookies.get('theme')
-    if (savedTheme === 'dark') {
-      setIsDarkTheme(true)
-      document.body.classList.add('dark-theme') // Apply dark theme to the entire body
-    } else {
-      document.body.classList.remove('dark-theme') // Apply light theme to the entire body
-    }
-  }, [])
-
-  const toggleTheme = () => {
-    setIsDarkTheme(prev => {
-      const newTheme = !prev
-      if (newTheme) {
-        Cookies.set('theme', 'dark')
-        document.body.classList.add('dark-theme')
-      } else {
-        Cookies.set('theme', 'light')
-        document.body.classList.remove('dark-theme')
-      }
-      return newTheme
-    })
-  }
 
   const handleLogout = () => {
     setIsLogoutPopupOpen(true)
@@ -63,44 +37,63 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <Link to="/">
+      {/* Logo */}
+      <Link to='/'>
         <Logo
           src={
             isDarkTheme
               ? 'https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-dark-theme-img.png'
               : 'https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-light-theme-img.png'
           }
-          alt="app logo"
+          alt='app logo'
         />
       </Link>
+
+      {/* Navigation */}
       <Nav>
+        {/* Theme Toggle Button */}
         <NavItem>
-          <IconButton onClick={toggleTheme} data-testid="theme">
+          <IconButton onClick={toggleTheme} data-testid='theme'>
             {isDarkTheme ? <FaSun size={24} /> : <FaMoon size={24} />}
           </IconButton>
         </NavItem>
+
+        {/* Profile Icon */}
         <NavItem>
           <IconButton onClick={handleProfileClick}>
-            <FaUserCircle size={24} />
+            <Logo
+              src='https://assets.ccbp.in/frontend/react-js/nxt-watch-profile-img.png'
+              alt='profile'
+              size={24}
+            />
           </IconButton>
         </NavItem>
+
+        {/* Logout Button */}
         <NavItem>
           <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
         </NavItem>
       </Nav>
 
+      {/* Logout Confirmation Popup */}
       {isLogoutPopupOpen && (
-        <LogoutPopup>
-          <p>Are you sure you want to logout?</p>
-          <PopupButtons>
-            <button type="button" onClick={handleCancel}>
-              Cancel
-            </button>
-            <button type="button" onClick={handleConfirmLogout}>
-              Confirm
-            </button>
-          </PopupButtons>
-        </LogoutPopup>
+        <Popup
+          modal
+          trigger={<LogoutButton>Logout</LogoutButton>}
+          className='popup-content'
+        >
+          <LogoutPopup>
+            <p>Are you sure you want to logout?</p>
+            <PopupButtons>
+              <button type='button' onClick={handleCancel}>
+                Cancel
+              </button>
+              <button type='button' onClick={handleConfirmLogout}>
+                Confirm
+              </button>
+            </PopupButtons>
+          </LogoutPopup>
+        </Popup>
       )}
     </HeaderContainer>
   )

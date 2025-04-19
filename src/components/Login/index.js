@@ -1,7 +1,8 @@
 import {useState} from 'react'
 import {useHistory} from 'react-router-dom'
-import Loader from 'react-loader-spinner' // keep this as it's being used
+import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
+import useTheme from '../../hooks/useTheme'
 import {
   LoginPageContainer,
   LoginForm,
@@ -10,7 +11,8 @@ import {
   ErrorMessage,
   CheckboxLabel,
   Checkbox,
-  ThemeButton,
+  LogoHeading,
+  LoginHeading,
 } from './styledComponents'
 
 const Login = () => {
@@ -20,7 +22,7 @@ const Login = () => {
   const [error, setError] = useState('')
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [theme, setTheme] = useState('light')
+  const {isDarkTheme} = useTheme()
 
   const handleLogin = async event => {
     event.preventDefault()
@@ -38,9 +40,7 @@ const Login = () => {
     setIsLoading(false)
 
     if (response.ok) {
-      console.log(`Data: ${JSON.stringify(data)}`)
-      const {jwt_token: jwtToken} = data // Destructure and rename
-
+      const {jwt_token: jwtToken} = data
       Cookies.set('jwt_token', jwtToken)
       history.replace('/')
     } else {
@@ -49,17 +49,14 @@ const Login = () => {
   }
 
   const handlePasswordVisibility = () => {
-    setIsPasswordVisible(prevState => !prevState)
-  }
-
-  const handleThemeToggle = () => {
-    setTheme(prevState => (prevState === 'light' ? 'dark' : 'light'))
+    setIsPasswordVisible(prev => !prev)
   }
 
   return (
-    <LoginPageContainer theme={theme}>
-      <LoginForm onSubmit={handleLogin}>
-        <h1>Login</h1>
+    <LoginPageContainer theme={isDarkTheme ? 'dark' : 'light'}>
+      <LoginForm onSubmit={handleLogin} theme={isDarkTheme ? 'dark' : 'light'}>
+        <LogoHeading>NXT WATCH</LogoHeading>
+        <LoginHeading>Login</LoginHeading>
 
         <label htmlFor="username">USERNAME</label>
         <Input
@@ -68,7 +65,7 @@ const Login = () => {
           placeholder="Username"
           value={username}
           onChange={e => setUsername(e.target.value)}
-          theme={theme}
+          theme={isDarkTheme ? 'dark' : 'light'}
         />
 
         <label htmlFor="password">PASSWORD</label>
@@ -78,31 +75,32 @@ const Login = () => {
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          theme={theme}
+          theme={isDarkTheme ? 'dark' : 'light'}
         />
 
-        <CheckboxLabel htmlFor="show-password">
+        <CheckboxLabel
+          htmlFor="show-password"
+          theme={isDarkTheme ? 'dark' : 'light'}
+        >
           <Checkbox
             id="show-password"
             type="checkbox"
             onChange={handlePasswordVisibility}
-            theme={theme}
           />
           Show Password
         </CheckboxLabel>
 
         <Button type="submit">Login</Button>
 
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+        {error && (
+          <ErrorMessage data-testid="error-message">{error}</ErrorMessage>
+        )}
+        {isLoading && (
+          <div className="loader-container" data-testid="loader">
+            <Loader type="ThreeDots" color="#ffffff" height={50} width={50} />
+          </div>
+        )}
       </LoginForm>
-      <ThemeButton data-testid="theme" onClick={handleThemeToggle}>
-        {theme === 'light' ? 'Dark' : 'Light'} Theme
-      </ThemeButton>
-      {isLoading && (
-        <div className="loader-container" data-testid="loader">
-          <Loader type="ThreeDots" color="#ffffff" height={50} width={50} />
-        </div>
-      )}
     </LoginPageContainer>
   )
 }

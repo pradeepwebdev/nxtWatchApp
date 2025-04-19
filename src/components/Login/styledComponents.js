@@ -18,7 +18,17 @@ export const LoginForm = styled.form`
   max-width: 400px;
   text-align: center;
 `
+export const LogoHeading = styled.h1`
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #4f46e5;
+`
 
+export const LoginHeading = styled.h2`
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: inherit;
+`
 export const Input = styled.input`
   width: 100%;
   padding: 10px;
@@ -47,6 +57,7 @@ export const Button = styled.button`
 `
 
 export const ErrorMessage = styled.p`
+  data-testid: "error-message";
   color: #ff0b37;
   font-size: 14px;
   margin-top: 10px;

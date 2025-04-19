@@ -1,9 +1,12 @@
 import {useState, useEffect, useCallback} from 'react'
 import {Link} from 'react-router-dom'
+import {useTheme} from 'styled-components'
 import Loader from 'react-loader-spinner'
 import {formatDistanceToNow} from 'date-fns'
 import Popup from 'reactjs-popup'
 import Cookies from 'js-cookie'
+import {gamingVideosApiUrl} from '../../utils/apiUrls'
+
 import {
   GamingContainer,
   Banner,
@@ -22,36 +25,21 @@ import {
 } from './styledComponents'
 
 const Gaming = () => {
+  const theme = useTheme()
   const [videos, setVideos] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [showLogoutPopup, setShowLogoutPopup] = useState(false)
-  const [theme, setTheme] = useState('light')
 
-  // Function to get JWT token from cookies/localStorage
-  const getAuthToken = () =>
-    Cookies.get('jwt_token') || document.cookie.split('jwt_token=')[1]
-
-  // Fetching the gaming videos from the API
   const fetchVideos = useCallback(async () => {
     try {
-      const jwtToken = getAuthToken()
-      if (!jwtToken) {
-        setHasError(true)
-        setIsLoading(false)
-        return
-      }
-
-      const response = await fetch('https://apis.ccbp.in/videos/gaming', {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
+      const jwtToken = Cookies.get('jwt_token')
+      const response = await fetch(gamingVideosApiUrl, {
+        headers: {Authorization: `Bearer ${jwtToken}`},
       })
 
       if (!response.ok) {
-        setHasError(true)
-        setIsLoading(false)
-        return
+        throw new Error('Failed to fetch')
       }
 
       const data = await response.json()
@@ -61,17 +49,11 @@ const Gaming = () => {
       setHasError(true)
       setIsLoading(false)
     }
-  }, []) // Empty dependency array ensures that the function is stable
-
-  // Set theme color for background based on user preference or system
-  useEffect(() => {
-    const savedTheme = Cookies.get('theme') || 'light' // Set default theme
-    setTheme(savedTheme)
   }, [])
 
   useEffect(() => {
     fetchVideos()
-  }, [fetchVideos]) // Added fetchVideos as a dependency
+  }, [fetchVideos])
 
   const handleRetry = () => {
     setHasError(false)
@@ -114,31 +96,27 @@ const Gaming = () => {
               <VideoThumbnail src={video.thumbnail_url} alt="video thumbnail" />
             </Link>
             <VideoDetails>
-              {/* Ensure that channel and profile_image_url are valid */}
-              {video.channel && video.channel.profile_image_url ? (
-                <ChannelLogo
-                  src={video.channel.profile_image_url}
-                  alt="channel logo"
-                />
-              ) : (
-                <ChannelLogo
-                  src="https://via.placeholder.com/30"
-                  alt="placeholder"
-                />
-              )}
+              <ChannelLogo
+                src={
+                  video.channel?.profile_image_url ||
+                  'https://via.placeholder.com/30'
+                }
+                alt="channel logo"
+              />
               <div>
                 <ChannelName>{video.channel?.name}</ChannelName>
                 <ViewCount>{video.view_count} views</ViewCount>
                 <PublishedAt>
                   {video.published_at
                     ? `${formatDistanceToNow(new Date(video.published_at))} ago`
-                    : 'Invalid date'}
+                    : 'Unknown'}
                 </PublishedAt>
               </div>
             </VideoDetails>
           </VideoItem>
         ))}
       </VideoList>
+
       <Popup
         open={showLogoutPopup}
         onClose={() => setShowLogoutPopup(false)}
@@ -156,6 +134,7 @@ const Gaming = () => {
           <button
             type="button"
             onClick={() => {
+              Cookies.remove('jwt_token')
               window.location.href = '/login'
             }}
             className="confirm-button"

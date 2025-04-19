@@ -5,7 +5,7 @@ export const GamingContainer = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: ${({theme}) => (theme === 'dark' ? '#0f0f0f' : '#f9f9f9')};
+  background-color: ${({theme}) => (theme.isDark ? '#0f0f0f' : '#f9f9f9')};
 `
 
 export const Banner = styled.div`
